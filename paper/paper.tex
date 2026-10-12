@@ -1,0 +1,56 @@
+\documentclass{article}
+
+% Layout and typography from the NeurIPS style (neurips_2026.sty, kept locally).
+% [preprint] = non-anonymous, no line numbers; the first-page notice is removed below.
+\usepackage[preprint]{neurips_2026}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+% remove the first-page conference/preprint notice
+\makeatletter
+\let\@notice\relax
+\makeatother
+
+% notation
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\muhat}{\hat\mu}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+
+\title{Forecast Uncertainty from Bootstrapped Portfolio and Market Returns}
+
+\author{%
+  Deuel Lau
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+Extrapolating last year is tempting: it is the most recent evidence, it is easy to compute, and a good year feels like it says something about the next one. The honest question is how much a single year (or four) of daily returns can tell us about next year's return, and how wide the range of plausible outcomes should be.
+
+A common way to put a range around a forecast is the \emph{bootstrap}: resample past daily returns at random, with replacement, to simulate many possible futures, and read the range off those simulations. The method is simple and makes few assumptions, but it treats the past average return as if it were the true one. With only a few years of data that average is itself uncertain, so the range may be too narrow. A range is only useful if it is honest, which we measure by \emph{coverage}: how often the realised outcome falls inside a band with a stated level (a 90\% band should contain about 90\% of outcomes).
+
+We study this for the daily returns of a single portfolio and of market benchmarks over about four years. We (i) set out how a bootstrap range behaves when uncertainty in the mean is ignored, and compare it with variants that account for it, including a Bayesian \emph{posterior} for the mean (a belief about the average return after combining a prior with the data); (ii) test the coverage of each method on simulated data where the true process is known, including fat-tailed and volatility-clustered returns; and (iii) apply the methods to the real series and report how wide the ranges are and how much a few years of data say about the average return.
+
+This is an illustration of forecast uncertainty. We do not predict returns, rank methods on real data, or claim a trading edge.
+
+\end{document}

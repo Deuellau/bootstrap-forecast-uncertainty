@@ -1,0 +1,29 @@
+# ---- personal data: the whole folder stays local ----
+data/
+
+# ---- Claude Code context (private notes) ----
+claude/
+CLAUDE.md
+
+# ---- paper/: track only .tex sources and paper.pdf (the .sty, .bib, Makefile and build files stay local) ----
+paper/*
+!paper/*.tex
+!paper/paper.pdf
+!paper/*/
+paper/*/*
+!paper/*/*.tex
+
+# ---- editor ----
+.vscode/
+
+# ---- python / notebooks / OS ----
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+.DS_Store
+
+# ---- raw-ish generated outputs (summary tables/figures under reports/ are tracked) ----
+reports/**/*_raw*
+reports/**/*backtest*.csv
+
