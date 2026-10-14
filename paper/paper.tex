@@ -36,6 +36,8 @@
   Deuel Lau
 }
 
+\input{tables/data_summary}
+
 \begin{document}
 
 \maketitle
@@ -45,12 +47,165 @@
 
 \section{Introduction}\label{sec:intro}
 
-Extrapolating last year is tempting: it is the most recent evidence, it is easy to compute, and a good year feels like it says something about the next one. The honest question is how much a single year (or four) of daily returns can tell us about next year's return, and how wide the range of plausible outcomes should be.
+Extrapolating last year is tempting: it is the most recent evidence, it is easy to compute, and a
+good year feels like it says something about the next one. The honest question is how much a single
+year (or four) of daily returns can tell us about next year's return, and how wide the range of
+plausible outcomes should be.
 
-A common way to put a range around a forecast is the \emph{bootstrap}: resample past daily returns at random, with replacement, to simulate many possible futures, and read the range off those simulations. The method is simple and makes few assumptions, but it treats the past average return as if it were the true one. With only a few years of data that average is itself uncertain, so the range may be too narrow. A range is only useful if it is honest, which we measure by \emph{coverage}: how often the realised outcome falls inside a band with a stated level (a 90\% band should contain about 90\% of outcomes).
+A common way to put a range around a forecast is the \emph{bootstrap}: resample past daily returns
+at random, with replacement, to simulate many possible futures, and read the range off those
+simulations. The method is simple and makes few assumptions, but it treats the past average return
+as if it were the true one. With only a few years of data that average is itself uncertain, so the
+range may be too narrow. A range is only useful if it is honest, which we measure by
+\emph{coverage}: how often the realised outcome falls inside a band with a stated level (a 90\% band
+should contain about 90\% of outcomes).
 
-We study this for the daily returns of a single portfolio and of market benchmarks over about four years. We (i) set out how a bootstrap range behaves when uncertainty in the mean is ignored, and compare it with variants that account for it, including a Bayesian \emph{posterior} for the mean (a belief about the average return after combining a prior with the data); (ii) test the coverage of each method on simulated data where the true process is known, including fat-tailed and volatility-clustered returns; and (iii) apply the methods to the real series and report how wide the ranges are and how much a few years of data say about the average return.
+We study this for the daily returns of a single portfolio and of market benchmarks over about four
+years. We (i) set out how a bootstrap range behaves when uncertainty in the mean is ignored, and
+compare it with variants that account for it, including a Bayesian \emph{posterior} for the mean (a
+belief about the average return after combining a prior with the data); (ii) test the coverage of
+each method on simulated data where the true process is known, including fat-tailed and
+volatility-clustered returns; and (iii) apply the methods to the real series and report how wide the
+ranges are and how much a few years of data say about the average return.
 
-This is an illustration of forecast uncertainty. We do not predict returns, rank methods on real data, or claim a trading edge.
+This is an illustration of forecast uncertainty. We do not predict returns, rank methods on real
+data, or claim a trading edge.
 
+\section{Data and setup}\label{sec:data}
+
+The data are daily returns for four series from \dataStart{} to \dataEnd{} (\nDays{} trading days):
+the time-weighted return of one personal brokerage account, and three exchange-traded funds used as
+market benchmarks, SPY (S\&P 500), BND (US investment-grade bonds) and GLD (gold). The benchmark
+returns are total returns, so dividends and interest are included. All series are expressed in
+Singapore dollars: the benchmarks are listed in US dollars and are converted with the daily USD/SGD
+exchange rate. Days on which US markets were closed are merged into the next trading day, where the
+account's returns over the closed days are compounded and the benchmarks' exchange-rate moves are
+applied. The first and last years are partial: 2022 starts in September and 2026 ends in October.
+The first account observation is the base date and is dropped.
+
+We work with daily log returns $r_t=\ln(1+R_t)$, where $R_t$ is the simple daily return, so that
+returns over several days add. Results are shown as simple returns where this helps interpretation.
+A forecast made at an origin $T$ uses data up to $T$ only, and the outcome it is scored against is
+the return over the next $H$ trading days of the same series, so that no future information enters
+any forecast.
+
+Table~\ref{tab:yearly} reports the number of trading days and the annualised volatility of each
+series by calendar year. In each full year (2023 to 2025) the account's volatility is higher than
+that of every benchmark. The raw data are personal and are not released.
+
+\begin{table}[htbp]
+  \caption{Trading days and annualised volatility of daily log returns by calendar year. 2022 and
+  2026 are partial years.}
+  \label{tab:yearly}
+  \centering
+  \yearlyTable
+\end{table}
+
+\section{Methods and theory}\label{sec:methods}
+
+\subsection{Setup and notation}
+At a forecast origin we observe a history $r=(r_1,\dots,r_n)$ of daily log returns, with sample mean
+and plug-in variance
+\[
+  \muhat=\frac1n\sum_{t=1}^{n} r_t,\qquad \hat\sigma^2=\frac1n\sum_{t=1}^{n}(r_t-\muhat)^2 .
+\]
+The \emph{empirical distribution} of the history is $\hat F_n=\frac1n\sum_{t=1}^{n}\delta_{r_t}$,
+which puts probability $1/n$ on each observed day. Drawing a value from $\hat F_n$ means picking one
+of the $n$ observed days uniformly at random, and drawing $m$ values \emph{i.i.d.\ from $\hat F_n$}
+means drawing $m$ days with replacement. The bootstrap replaces the unknown distribution of daily
+returns by $\hat F_n$ and simulates from it.
+
+The target is the return over the next $H$ trading days,
+\[
+  S=\sum_{t=n+1}^{n+H} r_t .
+\]
+A forecast method returns $B$ simulated values $S^*_1,\dots,S^*_B$ of $S$. The \emph{band} at level
+$1-\alpha$ is $[\hat q_{\alpha/2},\hat q_{1-\alpha/2}]$, where $\hat q_p$ is the empirical
+$p$-quantile of $S^*_1,\dots,S^*_B$. Its \emph{coverage} is the probability that the realised $S$
+falls inside it, and a band is honest when its coverage is close to $1-\alpha$.
+
+\begin{assumption}[i.i.d.\ returns]\label{as:iid}
+Daily log returns are independent and identically distributed with mean $\mu$ and finite variance
+$\sigma^2$, and future returns are independent of the history.
+\end{assumption}
+
+\subsection{Two bootstrap methods}
+\paragraph{Simple bootstrap.} For each path $b=1,\dots,B$, draw $R^*_{b,1},\dots,R^*_{b,H}$
+independently from $\hat F_n$, that is, $H$ days with replacement from the history, and set
+\[
+  S^*_b=\sum_{h=1}^{H} R^*_{b,h}.
+\]
+The band at level $1-\alpha$ is $[\hat q_{\alpha/2},\hat q_{1-\alpha/2}]$, the empirical quantiles
+of $S^*_1,\dots,S^*_B$. This treats the historical mean as the true mean.
+
+\paragraph{Mean-uncertainty bootstrap.} For each path $b=1,\dots,B$ there are two stages. In the
+first, draw a pseudo-history $r^*_{b,1},\dots,r^*_{b,n}$ independently from $\hat F_n$, that is, $n$
+days with replacement from the history, and let $\hat F^*_b=\frac1n\sum_{t=1}^{n}\delta_{r^*_{b,t}}$
+be its empirical distribution. In the second, draw $R^*_{b,1},\dots,R^*_{b,H}$ independently from
+$\hat F^*_b$ and set
+\[
+  S^*_b=\sum_{h=1}^{H} R^*_{b,h}.
+\]
+The band is again formed from the empirical quantiles of $S^*_1,\dots,S^*_B$. Every path has its own
+pseudo-history with mean $\muhat^*_b=\frac1n\sum_t r^*_{b,t}$, which differs from $\muhat$ by about
+$\hat\sigma/\sqrt{n}$, so the simulated sums carry the uncertainty of the sample mean as well as
+day-to-day noise.
+
+For a fixed history, the simulated sums of the two methods have
+\begin{align*}
+  \E^*[S^*_b]&=H\muhat && \text{(both methods)},\\
+  \mathrm{Var}^*(S^*_b)&=H\hat\sigma^2 && \text{(simple)},\\
+  \mathrm{Var}^*(S^*_b)&=H\hat\sigma^2\Bigl(1+\frac{H-1}{n}\Bigr) && \text{(mean-uncertainty)},
+\end{align*}
+where $\E^*$ and $\mathrm{Var}^*$ are taken over the resampling for a fixed history
+(Appendix~\ref{app:derivation}). The pseudo-history has exactly $n$ days, the length of the real
+history, so that its mean is as uncertain as the real sample mean and no more. Both methods use the
+same horizon $H$ and the same number of paths $B$, which affects only Monte Carlo noise, not the
+spread of the band.
+
+\subsection{Coverage of the simple bootstrap}
+\begin{proposition}\label{prop:cov}
+Under Assumption~\ref{as:iid}, the forecast error $S-H\muhat$ has variance $H\sigma^2(1+H/n)$, while
+the simple bootstrap's sums have variance $H\hat\sigma^2\approx H\sigma^2$. If $S$ is approximately
+normal, a simple-bootstrap band at level $1-\alpha$ therefore has coverage approximately
+\[
+  2\,\Phi\!\left(\frac{z_{1-\alpha/2}}{\sqrt{1+H/n}}\right)-1,
+\]
+where $\Phi$ is the standard normal distribution function and $z_{1-\alpha/2}$ its $1-\alpha/2$
+quantile. The mean-uncertainty bootstrap has variance $H\hat\sigma^2\bigl(1+(H-1)/n\bigr)\approx
+H\sigma^2(1+H/n)$ and so removes this shortfall.
+\end{proposition}
+The proof is in Appendix~\ref{app:derivation}. The correction factor $\sqrt{1+H/n}$ depends only on
+the ratio of the forecast horizon to the length of the history. For example, with $H=n$ a nominal
+95\% band covers about 83\% of outcomes, and a nominal 80\% band about 64\%.
+
+\appendix
+\section{Derivation of Proposition~\ref{prop:cov}}\label{app:derivation}
+By Assumption~\ref{as:iid}, $S$ is independent of $\muhat$, so
+\[
+  \mathrm{Var}(S-H\muhat)=\mathrm{Var}(S)+H^2\,\mathrm{Var}(\muhat)
+  =H\sigma^2+\frac{H^2\sigma^2}{n}=H\sigma^2\Bigl(1+\frac{H}{n}\Bigr).
+\]
+The simple bootstrap resamples the history, so its sums have variance $H\hat\sigma^2\approx
+H\sigma^2$ and miss the second term. A band at level $1-\alpha$ has half-width
+$z_{1-\alpha/2}\sqrt{H}\,\sigma$ around $H\muhat$. If the forecast error is approximately normal
+with standard deviation $\sqrt{H}\,\sigma\sqrt{1+H/n}$, the probability that it lies inside the band
+is $2\Phi\bigl(z_{1-\alpha/2}/\sqrt{1+H/n}\bigr)-1$.
+
+For the simple bootstrap, the $H$ draws are i.i.d.\ from $\hat F_n$, which has mean $\muhat$ and
+variance $\hat\sigma^2$, so $\E^*[S^*]=H\muhat$ and $\mathrm{Var}^*(S^*)=H\hat\sigma^2$.
+
+For the mean-uncertainty bootstrap, let $\muhat^*_b$ and $\hat\sigma^{*2}_b$ be the mean and plug-in
+variance of the $b$-th pseudo-history, which is a sample of $n$ i.i.d.\ draws from $\hat F_n$. Then
+$\E^*[\muhat^*_b]=\muhat$, $\mathrm{Var}^*(\muhat^*_b)=\hat\sigma^2/n$ and
+$\E^*[\hat\sigma^{*2}_b]=\hat\sigma^2(n-1)/n$. Given the pseudo-history, the $H$ forecast days are
+i.i.d.\ from $\hat F^*_b$, so $S^*_b$ has conditional mean $H\muhat^*_b$ and conditional variance
+$H\hat\sigma^{*2}_b$. By the law of total variance,
+\[
+  \mathrm{Var}^*(S^*_b)=H\,\E^*[\hat\sigma^{*2}_b]+H^2\,\mathrm{Var}^*(\muhat^*_b)
+  =H\hat\sigma^2\frac{n-1}{n}+\frac{H^2\hat\sigma^2}{n}
+  =H\hat\sigma^2\Bigl(1+\frac{H-1}{n}\Bigr),
+\]
+and $\E^*[S^*_b]=H\,\E^*[\muhat^*_b]=H\muhat$. This matches the variance of the forecast error up to
+a term of order $1/n$.
 \end{document}
