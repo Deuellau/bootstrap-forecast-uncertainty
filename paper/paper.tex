@@ -7,6 +7,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
+\hypersetup{hidelinks}
 \usepackage{url}
 \usepackage{booktabs}
 \usepackage{amsfonts}
@@ -37,6 +38,7 @@
 }
 
 \input{tables/data_summary}
+\input{tables/sim_iid}
 
 \begin{document}
 
@@ -178,6 +180,84 @@ H\sigma^2(1+H/n)$ and so removes this shortfall.
 The proof is in Appendix~\ref{app:derivation}. The correction factor $\sqrt{1+H/n}$ depends only on
 the ratio of the forecast horizon to the length of the history. For example, with $H=n$ a nominal
 95\% band covers about 83\% of outcomes, and a nominal 80\% band about 64\%.
+
+\section{Simulation study: i.i.d.\ returns}\label{sec:sim}
+
+\subsection{Design}
+We simulate independent Normal daily log returns with an annual volatility of 28\% (about that of
+the
+account) and an annual mean of 8\%. For each history length $n\in\{250,500,750,1000\}$ days and
+horizon
+$H\in\{21,63,126,252\}$ days, each of \simReps{} independent replications simulates one path of
+$n+H$ days.
+The first $n$ days are the history and the outcome is the sum of the last $H$, so the outcome is the
+continuation of the same path and never an independent draw. Each method forms bands at the 80\% and
+95\%
+levels from \simPaths{} simulated paths, and the \emph{coverage} of a cell is the share of
+replications whose
+outcome falls inside the band. Its standard error is $\sqrt{p(1-p)/R}$ for $R$ replications, between
+0.5 and
+1.1 percentage points here.
+
+All settings were fixed before any simulation was run, together with three predictions: (a) the
+simple
+bootstrap's coverage matches Proposition~\ref{prop:cov} to within 2 percentage points in every cell;
+(b) cells
+with the same $H/n$ lie on one curve whatever $n$ is; (c) the mean-uncertainty bootstrap is within 2
+percentage points of its nominal level in every cell.
+
+\subsection{Results}
+Figure~\ref{fig:hero} shows coverage against $H/n$ and Table~\ref{tab:sim} lists every cell. The
+simple
+bootstrap's coverage falls as $H/n$ grows and follows the curve of Proposition~\ref{prop:cov}. When
+$H/n$ is
+close to one ($n=250$, $H=252$), a nominal 95\% band contains the outcome in only
+\simCovHnnNinetyFive\% of
+replications and a nominal 80\% band in \simCovHnnEighty\%. Points from different history lengths
+lie on the
+same curve (prediction b).
+
+Prediction (a) holds only approximately. Of the \simCells{} readings (16 cells at two levels),
+\simWithinTwoSeSimple{} are within two standard errors of the theoretical value, but
+\simOverTwoPoints{} differ
+from it by more than 2 percentage points, the largest by \simMaxGapSimple{}. All three are at
+$H=252$, and two
+of them come from the same cell and so share the same replications. On average the simple
+bootstrap's
+coverage is \simMeanGapSimple{} percentage points below the theoretical value.
+
+The mean-uncertainty bootstrap stays close to its nominal level in every cell (prediction c): the
+largest
+gap is \simMaxGapMu{} percentage points, and \simWithinTwoSeMu{} of the \simCells{} readings are
+within two
+standard errors. Its bands are wider than the simple bootstrap's by a factor that matches
+$\sqrt{1+H/n}$ to within \simMaxWidthGap{}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figures/hero_coverage.pdf}
+  \caption{Coverage of the simple and mean-uncertainty bootstrap bands against $H/n$ in the
+  simulated
+  i.i.d.\ world, at nominal 80\% (left) and 95\% (right). Markers show the history length $n$; bars
+  are
+  95\% intervals from the simulation. The solid line is the prediction of Proposition~\ref{prop:cov}
+  for the
+  simple bootstrap and the dashed line is the nominal level.}
+  \label{fig:hero}
+\end{figure}
+
+\begin{table}[htbp]
+  \caption{Coverage in the simulated i.i.d.\ world. Theory is Proposition~\ref{prop:cov}; Simple and
+  Mean-unc.\ are the simple and mean-uncertainty bootstrap.}
+  \label{tab:sim}
+  \centering
+  \small
+  \simTable
+\end{table}
+
+This is the simplest case: returns are Normal with constant volatility, which favours the theory. It
+says
+nothing yet about fat tails or volatility clustering.
 
 \appendix
 \section{Derivation of Proposition~\ref{prop:cov}}\label{app:derivation}

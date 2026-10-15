@@ -1,0 +1,41 @@
+\newcommand{\simTable}{%
+\begin{tabular}{rrrrrrrrr}
+\toprule
+ & & \multicolumn{3}{c}{95\% band} & \multicolumn{3}{c}{80\% band} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+$n$ & $H$ & Theory & Simple & Mean-unc. & Theory & Simple & Mean-unc. \\
+\midrule
+250 & 21 & 0.940 & 0.933 & 0.945 & 0.782 & 0.773 & 0.795 \\
+250 & 63 & 0.920 & 0.915 & 0.949 & 0.748 & 0.745 & 0.797 \\
+250 & 126 & 0.890 & 0.893 & 0.952 & 0.704 & 0.706 & 0.798 \\
+250 & 252 & 0.833 & 0.824 & 0.946 & 0.634 & 0.610 & 0.791 \\
+\addlinespace
+500 & 21 & 0.945 & 0.948 & 0.953 & 0.791 & 0.797 & 0.804 \\
+500 & 63 & 0.935 & 0.931 & 0.945 & 0.773 & 0.762 & 0.790 \\
+500 & 126 & 0.920 & 0.922 & 0.952 & 0.748 & 0.756 & 0.808 \\
+500 & 252 & 0.890 & 0.881 & 0.951 & 0.704 & 0.712 & 0.806 \\
+\addlinespace
+750 & 21 & 0.947 & 0.939 & 0.944 & 0.794 & 0.785 & 0.792 \\
+750 & 63 & 0.940 & 0.940 & 0.951 & 0.782 & 0.774 & 0.796 \\
+750 & 126 & 0.930 & 0.929 & 0.948 & 0.764 & 0.773 & 0.804 \\
+750 & 252 & 0.910 & 0.887 & 0.932 & 0.732 & 0.709 & 0.783 \\
+\addlinespace
+1000 & 21 & 0.948 & 0.948 & 0.955 & 0.795 & 0.791 & 0.794 \\
+1000 & 63 & 0.943 & 0.944 & 0.947 & 0.786 & 0.777 & 0.790 \\
+1000 & 126 & 0.935 & 0.932 & 0.945 & 0.773 & 0.778 & 0.803 \\
+1000 & 252 & 0.920 & 0.930 & 0.955 & 0.748 & 0.759 & 0.812 \\
+\bottomrule
+\end{tabular}}
+\newcommand{\simCells}{32}
+\newcommand{\simWithinTwoSeSimple}{29}
+\newcommand{\simWithinTwoSeMu}{31}
+\newcommand{\simOverTwoPoints}{3}
+\newcommand{\simMaxWidthGap}{0.005}
+\newcommand{\simReps}{2{,}000}
+\newcommand{\simPaths}{2{,}000}
+\newcommand{\simMeanGapSimple}{0.3}
+\newcommand{\simMaxGapSimple}{2.4}
+\newcommand{\simMaxGapMu}{1.7}
+\newcommand{\simMinCoverageSimple}{61}
+\newcommand{\simCovHnnNinetyFive}{82}
+\newcommand{\simCovHnnEighty}{61}
